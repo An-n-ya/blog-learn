@@ -13,6 +13,11 @@
 
 </script>
 
+<svelte:head>
+    <title>My Blog</title>
+    <meta name="desciption" content="我的个人博客">
+</svelte:head>
+
 <main>
     {#each data.posts as post}
         <PageCard {...post}></PageCard>
