@@ -2,8 +2,7 @@ import { convertMarkdown } from "$lib/handle-markdown";
 import {json} from "@sveltejs/kit"
 
 
-// @ts-ignore
-export function GET({params}) {
+export function GET({params}: {params: any}) {
     // 从动态地址中解析出md地址
     const {url} = params;
     // 解析对应的md文件

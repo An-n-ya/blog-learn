@@ -1,6 +1,12 @@
-<script>
-    /** @type {import('./$types').PageData} */
-    export let data;
+<style>
+    article {
+        padding: 4vw;
+    }
+</style>
+
+<script lang="ts">
+    import type {PageData} from "./$types";
+    export let data: PageData;
 </script>
 
 <article>
