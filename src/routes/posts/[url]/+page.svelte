@@ -1,5 +1,5 @@
 <style>
-    :global(article) {
+    article {
         padding: 4vw;
     }
 </style>

@@ -15,7 +15,7 @@
 
 <svelte:head>
     <title>My Blog</title>
-    <meta name="desciption" content="我的个人博客">
+    <meta name="description" content="我的个人博客">
 </svelte:head>
 
 <main>
