@@ -212,6 +212,10 @@ class JerseyLearnApplicationTests {
 ```
 测试成功!
 
+#### 参考资料：
+https://www.vogella.com/tutorials/REST/article.html
+https://zetcode.com/springboot/jersey/
+
 #### 下一步
 使用jersey编写 [Hypermedia-Driven](https://en.wikipedia.org/wiki/HATEOAS) 的restful接口
 解析更复杂的参数和返回更复杂内容
@@ -498,3 +502,9 @@ class JerseyLearnApplicationTests extends JAXRSResourceBase {
 
 然后执行`mvn test`, 测试成功！
 ![](https://picture-bed-1301848969.cos.ap-shanghai.myqcloud.com/20230110202755.png)
+
+
+#### 参考资料
+spring-security 官方示例代码 https://github.com/spring-projects/spring-security-samples/blob/main/servlet/spring-boot/java/hello-security-explicit/src/test/java/example/HelloSecurityExplicitApplicationTests.java
+spring-security 文档 https://docs.spring.io/spring-security/reference/servlet/architecture.html
+spring-security 官方教程 https://spring.io/guides/gs/securing-web/
