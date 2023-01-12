@@ -3,6 +3,7 @@ import glob from "glob";
 import fm from "front-matter"
 import {remark} from "remark"
 import html from "remark-html"
+import { rehype } from "rehype";
 
 /**
  * 导入目录下的所有md文件，解析front matter和正文，放入返回结构
@@ -27,6 +28,7 @@ export function convertMarkdown(path: string) {
     let {attributes, body} = fm(file) as any;
     
     let result = remark().use(html).processSync(body);
+    result = rehype().processSync(result);
     
     return {path, attributes, body: String(result)}
 }
