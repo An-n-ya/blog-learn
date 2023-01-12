@@ -1,9 +1,10 @@
 import fs from "fs";
 import glob from "glob";
-import fm from "front-matter"
-import {remark} from "remark"
-import html from "remark-html"
-import { rehype } from "rehype";
+import fm from "front-matter";
+import {unified} from "unified";
+import html from "remark-html";
+import parse from "remark-parse"
+import highlight from "remark-highlight.js"
 
 /**
  * 导入目录下的所有md文件，解析front matter和正文，放入返回结构
@@ -27,8 +28,13 @@ export function convertMarkdown(path: string) {
     // 调用front-matter解析md头部信息
     let {attributes, body} = fm(file) as any;
     
-    let result = remark().use(html).processSync(body);
-    result = rehype().processSync(result);
+    // 这里需要把 sanitize 设置为false， 才能保存属性的class属性
+    let result = unified()
+                    .use(parse)
+                    .use(html, {sanitize: false})
+                    .use(highlight)
+                    .processSync(body);
+    console.log(result)
     
     return {path, attributes, body: String(result)}
 }
