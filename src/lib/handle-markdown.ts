@@ -34,7 +34,6 @@ export function convertMarkdown(path: string) {
                     .use(html, {sanitize: false})
                     .use(highlight)
                     .processSync(body);
-    console.log(result)
     
     return {path, attributes, body: String(result)}
 }
