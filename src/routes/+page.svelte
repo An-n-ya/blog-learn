@@ -1,6 +1,7 @@
 <style>
     main {
-        padding: 4vw;
+        padding: 0 4vw;
+        height: calc(100% - 8em);
     }
 </style>
 

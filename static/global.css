@@ -1,6 +1,17 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+}
+
+body > div {
+    display: flex !important;
+    flex-direction: column;
+    height: 100%;
+}
+
+html {
+    height: 100%;
 }
 
 a {
@@ -13,4 +24,19 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+
+/* article 下的结构都是自动生成的，需要写到全局css里 */
+article img {
+    display: block;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+    margin: 1em 0;
+    max-width: 80vw;
+}
+
+article p {
+    white-space: pre-wrap;
 }

@@ -2,9 +2,22 @@
     header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         border-bottom: 1px solid lightgray;
         padding-left: 4vw;
         padding-right: 4vw;
+        height: 4em;
+    }
+    footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid lightgray;
+        padding-left: 4vw;
+        padding-right: 4vw;
+        bottom: 0;
+        height: 4em;
+        width: calc(100% - 8vw);
     }
     
     nav {
@@ -33,3 +46,9 @@
 </header>
 
 <slot></slot>
+
+<footer>
+    <div>备案号:</div>
+    <div>Email: ankh04@icloud.com</div>
+    <div><a href="https://github.com/ankh04">Github</a></div>
+</footer>
