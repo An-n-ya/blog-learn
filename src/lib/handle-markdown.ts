@@ -5,6 +5,7 @@ import {unified} from "unified";
 import html from "remark-html";
 import parse from "remark-parse"
 import highlight from "remark-highlight.js"
+import { attr } from "svelte/internal";
 
 /**
  * 导入目录下的所有md文件，解析front matter和正文，放入返回结构
@@ -27,6 +28,9 @@ export function convertMarkdown(path: string) {
     let file = fs.readFileSync(path, "utf8");
     // 调用front-matter解析md头部信息
     let {attributes, body} = fm(file) as any;
+    if (!attributes.description) {
+        attributes.description = "暂无简介";
+    }
     
     // 这里需要把 sanitize 设置为false， 才能保存属性的class属性
     let result = unified()
