@@ -1215,5 +1215,132 @@ public class Secret {
 +        Credential cred = new Credential(secret.SecretId, secret.SecretKey);
 ```
 这样就完成了一个简单的RPC：由我们的后端向nacos发起请求获取配置信息。
+ 
+#### 使用Redis存储验证码
+添加spring data redis依赖：
+```xml
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+```
+增加redis的帮助类
+```java
+@Named
+public class RedisServiceImpl implements RedisService {
+    @Inject
+    private StringRedisTemplate redisTemplate;
 
-#### 使用redis给验证码设置过期时间
+    @Override
+    public void set(String key, String value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    @Override
+    public String get(String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
+
+    @Override
+    public boolean expire(String key, long expire) {
+        // 以秒为单位设置key的过期时间
+        return redisTemplate.expire(key, expire, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void remove(String key) {
+        redisTemplate.delete(key);
+    }
+
+    @Override
+    public Long increment(String key, long delta) {
+        return redisTemplate.opsForValue().increment(key, delta);
+    }
+}
+```
+
+在AccountService中加入验证码相关的功能
+```java
+    @Override
+    public void generateVerifyCode(String telephone) {
+        // 生成验证码
+        var verifyCode = makeVerifyCode(telephone);
+        // 发送验证码
+        var expire_minute = Math.ceilMod(VERIFY_CODE_EXPIRE_SECONDS, 60);
+        SendSms.send(verifyCode, String.valueOf(expire_minute), telephone);
+    }
+
+    /**
+     * 随机生成六位数字验证码，并保存到redis
+     * @param telephone
+     * @return
+     */
+    public String makeVerifyCode(String telephone) {
+        // TODO: 如果redis中已经有该手机了，且过去没有多久，拒绝生成验证码
+        var sb = new StringBuilder();
+        var rand = new Random();
+        // 随机生成六位数字校验码
+        for (int i = 0; i < 6; i++) {
+            sb.append(rand.nextInt(10));
+        }
+        var verifyCode = sb.toString();
+        // 保存进redis
+        redisService.set(telephone, verifyCode);
+        // 设置过期时间
+        redisService.expire(telephone, VERIFY_CODE_EXPIRE_SECONDS);
+        return verifyCode;
+    }
+
+    @Override
+    public boolean checkVerifyCode(String telephone, String verifyCode) {
+        var target = redisService.get(telephone);
+        return verifyCode.equals(target);
+    }
+```
+这里的generateVerifyCode被拆分成了两步：1. 生成数字验证码保存到redis 2. 调用腾讯接口发送短信
+这样拆分的目的可以让逻辑更清晰，更重要的是方便测试。下面来看看测试类:
+```java
+	@Test
+	void createAccountWithoutAuth() throws Exception {
+		var verifyCode = accountService.makeVerifyCode("17911112222");
+		var account = new AccountWithVerifyCode("ankh", "ankh", "ankh", "17911112222", "ankh04@icloud.com", verifyCode);
+		var res = post_json("/account/create", account);
+		assertOK(res);
+	}
+```
+由于我们现在注册需要加上验证码，我们调用`makeVerifyCode`直接从后台拿到验证码信息，然后调用`/account/create`接口创建账户
+
+
+#### 前端代码
+由于我们的后端接口是接受json的request，而前端表单提交默认是form payload，所以我们使用axios自己发出请求：
+```diff
+    <div class="btn-group-box">
+        <input id="return-btn" type="button" value="返回">
+-       <input type="submit" value="确认">
++       <!--不能使用type：button，以为那样是form注册, 在这里我们使用axios发送json负载的请求-->
++       <input id="submit-btn" type="button" value="确认">
+    </div>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
++        document.querySelector("#submit-btn").addEventListener("click", (e) => {
++        let telephone = document.querySelector('#telephone-input').value;
++        let password = document.querySelector('#password-input').value;
++        let username = document.querySelector('#username-input').value;
++        let verifycode = document.querySelector('#verifycode-input').value;
++        if (!telephone | !password | !username | !verifycode) {
++            // 填写信息不全，返回
++            return;
++        }
++        axios.post('/api/account/create', {
++            username,
++            password,
++            telephone,
++            verifyCode: verifycode
++        });
++    });
+
+```
+
+
+#### 参考资料
+java EE7 文档  https://docs.oracle.com/javaee/7/tutorial/partwebsvcs.htm#BNAYK
+JAX RS 教程 https://www.logicbig.com/tutorials/java-ee-tutorial/jax-rs/getting-started-with-jax-rs.html
