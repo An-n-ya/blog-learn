@@ -28,7 +28,7 @@ jobs:
           TARGET: "/home/ankh/blog/build"
           EXCLUDE: "/dist/, /node_modules/"
           SCRIPT_AFTER: |
-            cd ..
+            cd /home/ankh/blog
             node build
             ls -al
             echo $RSYNC_STDOUT
