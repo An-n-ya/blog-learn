@@ -48,7 +48,7 @@
 <slot></slot>
 
 <footer>
-    <div>备案号:</div>
+    <div><a href="http://beian.miit.gov.cn/">鄂ICP备20005759号-2</a></div>
     <div>Email: ankh04@icloud.com</div>
     <div><a href="https://github.com/ankh04">Github</a></div>
 </footer>

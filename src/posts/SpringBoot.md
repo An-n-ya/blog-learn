@@ -1340,6 +1340,9 @@ public class RedisServiceImpl implements RedisService {
 
 ```
 
+#### 下一步
+- Spring Security JWT
+- Swagger
 
 #### 参考资料
 java EE7 文档  https://docs.oracle.com/javaee/7/tutorial/partwebsvcs.htm#BNAYK
