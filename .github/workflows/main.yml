@@ -9,6 +9,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: Install Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '16.14.2'
+    - name: Install npm dependencies
+      run: npm install
+    - name: Run build task
+      run: npm run build --if-present
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
       env:
@@ -18,12 +26,9 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: "/home/ankh/blog"
-          EXCLUDE: "/node_modules/, /.svelte-kit, /.git"
+          EXCLUDE: ""
           SCRIPT_AFTER: |
             cd /home/ankh/blog
-            npm install
-            npm run build
-            killall node
             node build
             ls -al
             echo $RSYNC_STDOUT
