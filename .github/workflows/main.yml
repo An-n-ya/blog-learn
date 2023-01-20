@@ -22,11 +22,11 @@ jobs:
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "build/"
+          SOURCE: "/"
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: "/home/ankh/blog/build"
-          EXCLUDE: "/dist/, /node_modules/"
+          TARGET: "/home/ankh/blog"
+          EXCLUDE: "/node_modules/"
           SCRIPT_AFTER: |
             cd /home/ankh/blog
             node build
