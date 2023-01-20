@@ -26,7 +26,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: "/home/ankh/blog"
-          EXCLUDE: "/node_modules/", "./svelte-kit", ".git"
+          EXCLUDE: "/node_modules/, /.svelte-kit, /.git"
           SCRIPT_AFTER: |
             cd /home/ankh/blog
             node build
