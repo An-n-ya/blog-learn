@@ -28,6 +28,7 @@ jobs:
           TARGET: "/home/ankh/blog"
           EXCLUDE: ""
           SCRIPT_AFTER: |
+            killall node
             cd /home/ankh/blog
             node build
             ls -al
