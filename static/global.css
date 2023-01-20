@@ -40,3 +40,20 @@ article img {
 article p {
     white-space: pre-wrap;
 }
+
+article a {
+    font-size: 16px;
+    color: blue;
+    font-weight: 400;
+}
+
+article code {
+    margin: 0 2px;
+    padding: 2px 4px;
+    background-color: gainsboro;
+    border-radius: 4px;
+}
+
+article h1 {
+    font-size: 30px;
+}

@@ -1,6 +1,9 @@
 <style>
     article {
-        padding: 4vw;
+        padding: 4vw 0;
+        width: 1000px;
+        position:relative;
+        left: calc((100% - 1000px) / 2);
     }
 </style>
 

@@ -19,6 +19,9 @@
         height: 4em;
         width: calc(100% - 8vw);
     }
+    footer a {
+        font-size: 16px;
+    }
     
     nav {
         display: flex;
