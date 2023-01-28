@@ -28,7 +28,7 @@ jobs:
           TARGET: "/home/ankh/blog"
           EXCLUDE: ""
           SCRIPT_AFTER: |
-            killall node
+            netstat -tunlp | grep 3000 | awk '{print $7}' | grep -o "[[:digit:]]*" | xargs sudo kill -
             cd /home/ankh/blog
             node build
             ls -al
