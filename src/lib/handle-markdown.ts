@@ -3,8 +3,9 @@ import glob from "glob";
 import fm from "front-matter";
 import {unified} from "unified";
 import html from "remark-html";
-import parse from "remark-parse"
-import highlight from "remark-highlight.js"
+import parse from "remark-parse";
+import highlight from "remark-highlight.js";
+import moment from "moment";
 import { attr } from "svelte/internal";
 
 /**
@@ -31,6 +32,12 @@ export function convertMarkdown(path: string) {
     if (!attributes.description) {
         attributes.description = "暂无简介";
     }
+    let stats = fs.statSync(path);
+    moment.defaultFormat = "YYYY-MM-DD HH:mm:ss";
+    attributes.mtime = moment(stats.mtimeMs).format(); 
+    attributes.atime = moment(stats.atimeMs).format();
+    attributes.ctime = moment(stats.ctimeMs).format();
+    attributes.birthtime = moment(stats.birthtimeMs).format();
     
     // 这里需要把 sanitize 设置为false， 才能保存属性的class属性
     let result = unified()

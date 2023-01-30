@@ -8,6 +8,7 @@
 </style>
 
 <script lang="ts">
+    import moment from 'moment';
     import type {PageData} from "./$types";
     export let data: PageData;
 </script>
@@ -19,5 +20,13 @@
 
 <article>
     <h1>{data.post.attributes.title}</h1>
+    <div>
+        <div>
+            发表：{data.post.attributes.birthtime}
+        </div>
+        <div>
+            修改：{data.post.attributes.mtime}
+        </div>
+    </div>
     {@html data.post.body}
 </article>
