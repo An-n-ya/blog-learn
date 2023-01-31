@@ -1,5 +1,5 @@
 <style>
-    header {
+    /* header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -7,8 +7,8 @@
         padding-left: 4vw;
         padding-right: 4vw;
         height: 4em;
-    }
-    footer {
+    } */
+    /*footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -21,40 +21,24 @@
     }
     footer a {
         font-size: 16px;
-    }
-    
-    nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    h1 {
-        margin: 5;
-        font-weight: 400;
-        font-size: 25px;
-    }
-    
-    a {
-        margin-left: 20px;
-    }
+    } */
 </style>
 <script>
     import "../app.css";
 </script>
 
-<header>
+<header class="flex bg-white px-3 py-4 border-solid border border-x-0 items-center justify-between">
     <h1><a href="/">My Blog</a></h1>
-    <nav>
+    <nav class="">
         <a href="/">Home</a>
-        <a href="/posts">Posts</a>
+        <a class="ml-3" href="/posts">Posts</a>
     </nav>
 </header>
 
 <slot></slot>
 
-<footer>
-    <div><a href="http://beian.miit.gov.cn/">鄂ICP备20005759号-2</a></div>
+<footer class="flex bg-white items-center justify-between px-3 py-4 border-solid border border-x-0">
+    <div><a class="text-base" href="http://beian.miit.gov.cn/">鄂ICP备20005759号-2</a></div>
     <div>Email: ankh04@icloud.com</div>
-    <div><a href="https://github.com/ankh04">Github</a></div>
+    <div><a class="text-base" href="https://github.com/ankh04">Github</a></div>
 </footer>

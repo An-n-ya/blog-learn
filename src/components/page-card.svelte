@@ -14,7 +14,7 @@
 </script>
 
 <a href={url}>
-    <article>
+    <article class="ml-8 my-8">
         <h1>{title}</h1>
         <p>{description}</p>
     </article>

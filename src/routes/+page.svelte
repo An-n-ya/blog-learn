@@ -1,10 +1,3 @@
-<style>
-    main {
-        padding: 0 4vw;
-        height: calc(100% - 8em);
-    }
-</style>
-
 <script lang="ts">
     // @ts-ignore
     import PageCard from "/src/components/page-card.svelte";

@@ -1,4 +1,4 @@
-body {
+/* body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 100%;
@@ -8,11 +8,8 @@ body > div {
     display: flex !important;
     flex-direction: column;
     height: 100%;
-}
+} */
 
-html {
-    height: 100%;
-}
 
 a {
     margin: 0;
