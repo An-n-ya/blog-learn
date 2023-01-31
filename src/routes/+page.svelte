@@ -12,7 +12,7 @@
     <meta name="description" content="我的个人博客">
 </svelte:head>
 
-<main class="dark:bg-slate-800">
+<main>
     {#each data.posts as post}
         <PageCard {...post}></PageCard>
     {/each}
