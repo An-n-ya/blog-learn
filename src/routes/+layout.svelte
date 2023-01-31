@@ -39,6 +39,9 @@
         margin-left: 20px;
     }
 </style>
+<script>
+    import "../app.css";
+</script>
 
 <header>
     <h1><a href="/">My Blog</a></h1>
