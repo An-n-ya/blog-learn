@@ -5,6 +5,7 @@
         position:relative;
         left: calc((100% - 1000px) / 2);
     }
+
 </style>
 
 <script lang="ts">

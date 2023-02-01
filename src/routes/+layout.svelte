@@ -25,16 +25,27 @@
 </style>
 <script>
     import "../app.css";
+    import {onMount} from "svelte";
     let dark_mode = "Dark";
     function toggleLight() {
         if (dark_mode == "Dark") {
-            dark_mode = "Light";
+            dark_mode = "Bright";
             document.getElementsByTagName("html")[0].setAttribute("class", "");
+            document.querySelector("link#bright")?.removeAttribute("disabled");
+            document.querySelector("link#dark")?.setAttribute("disabled", "disabled");
         } else {
             dark_mode = "Dark";
             document.getElementsByTagName("html")[0].setAttribute("class", "dark");
+            document.querySelector("link#dark")?.removeAttribute("disabled");
+            document.querySelector("link#bright")?.setAttribute("disabled", "disabled");
         }
     }
+    
+onMount(() => {
+        document.querySelector("link#dark")?.removeAttribute("disabled");
+        document.querySelector("link#bright")?.setAttribute("disabled", "disabled");
+    });
+    
 </script>
 
 <header class="flex bg-slate-50 dark:bg-slate-800 dark:border-slate-500 bg-white px-3 py-4 border-solid border border-t-0 border-x-0 items-center justify-between">
