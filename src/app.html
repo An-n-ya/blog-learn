@@ -9,6 +9,17 @@
 		<link rel="stylesheet" id="bright" href="%sveltekit.assets%/vs.min.css">
 		%sveltekit.head%
 	</head>
+	
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-W5VLW19ZSQ"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'G-W5VLW19ZSQ');
+	</script>
+
 	<body data-sveltekit-preload-data="hover" class="bg-slate-100 dark:bg-slate-900 dark:text-slate-100">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
