@@ -28,8 +28,5 @@ jobs:
           TARGET: "/home/ankh/blog"
           EXCLUDE: ""
           SCRIPT_AFTER: |
-            netstat -tunlp | grep 3000 | awk '{print $7}' | grep -o "[[:digit:]]*" | xargs sudo kill -
             cd /home/ankh/blog
-            nohup node build &
-            ls -al
-            echo $RSYNC_STDOUT
+            pm2 restart build/index.js
