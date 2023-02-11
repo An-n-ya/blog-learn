@@ -21,7 +21,6 @@
 		padding: 0.2em 0;
 	}
 </style>
-
 <ul>
 {#each toc as item }
     <li>

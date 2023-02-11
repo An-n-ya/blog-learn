@@ -11,6 +11,7 @@
 <script lang="ts">
     import type {PageData} from "./$types";
     import TOC from "/src/components/toc.svelte";
+    import CalendarIcon from "/src/components/icon/calendar-icon.svelte";
     import {Active_Heading} from "/src/stores/index.js";
     export let data: PageData;
     
@@ -64,7 +65,7 @@
         <h1>{data.post.attributes.title}</h1>
         <div>
             <div>
-                发表：{data.post.attributes.mtime}
+                <CalendarIcon/>{data.post.attributes.mtime}
             </div>
         </div>
         {@html data.post.body}

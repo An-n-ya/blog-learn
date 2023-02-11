@@ -26,6 +26,10 @@ article img {
     @apply max-w-3xl xl:max-w-5xl
 }
 
+article svg {
+    @apply inline mr-2 relative bottom-0.5
+}
+
 article {
     @apply dark:text-slate-300
 }
