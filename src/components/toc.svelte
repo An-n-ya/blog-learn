@@ -1,8 +1,11 @@
-<script>
+<script lang="ts">
+    import {Active_Heading} from "/src/stores/index.js";
+
     /**
      * @type {Array<any>}
      */
-     export let toc;
+    export let toc: any[];
+     
      
      
 </script>
@@ -22,7 +25,9 @@
 <ul>
 {#each toc as item }
     <li>
-        <a href={"#" + item.name}>
+        <a href={"#" + item.name} class="{item.id == $Active_Heading
+                                                ? 'text-sky-400'
+                                                : 'text-slate-600'}">
             {item.name}
         </a>
         {#if item.child.length != 0}

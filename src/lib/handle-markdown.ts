@@ -54,6 +54,7 @@ export function convertMarkdown(path: string) {
     
     let value = toc(unified().use(parse).parse(body));
     let table_of_content: any[] = [];
+    let cnt = 0;
     function traverse(ast: any, input: any[]) {
         if (ast.type == "list") {
             for (let child of ast.children) {
@@ -61,9 +62,11 @@ export function convertMarkdown(path: string) {
                     let item = child.children[0];
                     if (item.type == "paragraph") {
                         input.push({
+                            id: cnt,
                             name: item.children[0].children[0].value,
                             child: []
                         });
+                        cnt += 1;
                     }
                     if (child.children[1]) {
                         let sub_list = child.children[1];

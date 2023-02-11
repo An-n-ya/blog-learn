@@ -11,13 +11,53 @@
 <script lang="ts">
     import type {PageData} from "./$types";
     import TOC from "/src/components/toc.svelte";
+    import {Active_Heading} from "/src/stores/index.js";
     export let data: PageData;
+    
+    let timer: NodeJS.Timeout | null;
+    let scroll_callback = () => {
+        if (timer) { return; }
+        timer = setTimeout(() => {
+            let _scrollTop =
+                (window.scrollY ||
+                window.pageYOffset ||
+                document.documentElement.scrollTop) + 100;
+
+            let headings = document.querySelectorAll("h2,h3,h4,h5,h6");
+            let headings_height: number[] = [];
+            // 这里多了两个一个是logo这里的h1标签，一个是文章的h1标签 (因此我们就不查找h1，
+            // 以后记得只使用h2以后的)
+            for (let i = 0; i < headings?.length; i++) {
+                headings_height.push((headings[i] as HTMLElement).offsetTop);                    
+            }
+            
+            if (headings_height[0] > _scrollTop) {
+                Active_Heading.update(() => 0);
+            } else if (headings_height[headings.length - 1] < _scrollTop) {
+                Active_Heading.update(() => headings.length - 1)
+            } else {
+                for (let i = 0; i < headings.length - 1; i++) {
+                    if (headings_height[i] < _scrollTop && headings_height[i + 1] > _scrollTop ) {
+                        Active_Heading.update(() => i);
+                        break;
+                    }
+                }
+            }
+            // console.log(_scrollTop, headings_height);
+            
+            timer = null;
+        }, 200);
+    }
+    
+
 </script>
 
 <svelte:head>
     <title>{data.post.attributes.title}</title>
     <meta name="description" content={data.post.description}>
 </svelte:head>
+
+<svelte:window on:scroll={scroll_callback}/>
 
 <div class="max-w-[90rem] mx-auto">
     <article class="max-w-3xl xl:max-w-5xl">
