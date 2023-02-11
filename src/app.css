@@ -7,17 +7,25 @@ article code {
 }
 
 article h1 {
-    @apply mb-5 text-5xl
+    @apply mb-5 text-5xl dark:text-white font-extrabold
 }
 
 article h2 {
-    @apply text-3xl my-3
+    @apply text-3xl mt-12 text-white font-semibold
 }
 
 article h3 {
-    @apply text-2xl my-2
+    @apply text-2xl mt-8 mb-2 text-white font-medium
+}
+
+article h4 {
+    @apply text-xl mt-6 mb-1 dark:text-white font-medium
 }
 
 article img {
     @apply max-w-3xl xl:max-w-5xl
+}
+
+article {
+    @apply dark:text-slate-300
 }
