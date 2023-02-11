@@ -6,7 +6,12 @@ import html from "remark-html";
 import parse from "remark-parse";
 import highlight from "remark-highlight.js";
 import moment from "moment";
+import {toc} from "mdast-util-toc";
+import headingid from "/src/utils/remarkjs/heading_id.js";
+import rehype from "remark-rehype";
+import stringify from "rehype-stringify";
 import { attr } from "svelte/internal";
+import type { ListContent } from "mdast";
 
 /**
  * 导入目录下的所有md文件，解析front matter和正文，放入返回结构
@@ -44,9 +49,33 @@ export function convertMarkdown(path: string) {
                     .use(parse)
                     .use(html, {sanitize: false})
                     .use(highlight)
+                    .use(headingid)
                     .processSync(body);
     
-    return {path, attributes, body: String(result)}
+    let value = toc(unified().use(parse).parse(body));
+    let table_of_content: any[] = [];
+    function traverse(ast: any, input: any[]) {
+        if (ast.type == "list") {
+            for (let child of ast.children) {
+                if (child.type == "listItem") {
+                    let item = child.children[0];
+                    if (item.type == "paragraph") {
+                        input.push({
+                            name: item.children[0].children[0].value,
+                            child: []
+                        });
+                    }
+                    if (child.children[1]) {
+                        let sub_list = child.children[1];
+                        traverse(sub_list, input[input.length - 1].child);
+                    }
+                }
+            }
+        }
+    }
+    traverse(value.map, table_of_content);
+    
+    return {path, attributes, body: String(result), toc: table_of_content}
 }
 
 export function convertToPostPreview(object: any) {
