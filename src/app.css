@@ -17,3 +17,7 @@ article h2 {
 article h3 {
     @apply text-2xl my-2
 }
+
+article img {
+    @apply max-w-3xl xl:max-w-5xl
+}

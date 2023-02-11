@@ -1,28 +1,3 @@
-<style>
-    /* header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid lightgray;
-        padding-left: 4vw;
-        padding-right: 4vw;
-        height: 4em;
-    } */
-    /*footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid lightgray;
-        padding-left: 4vw;
-        padding-right: 4vw;
-        bottom: 0;
-        height: 4em;
-        width: calc(100% - 8vw);
-    }
-    footer a {
-        font-size: 16px;
-    } */
-</style>
 <script>
     import "../app.css";
     import {onMount} from "svelte";
