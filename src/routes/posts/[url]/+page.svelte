@@ -44,10 +44,8 @@
                     }
                 }
             }
-            // console.log(_scrollTop, headings_height);
-            
             timer = null;
-        }, 200);
+        }, 50);
     }
     
 

@@ -11,11 +11,11 @@ article h1 {
 }
 
 article h2 {
-    @apply text-3xl mt-12 text-white font-semibold
+    @apply text-3xl mt-12 mb-2 dark:text-white font-semibold
 }
 
 article h3 {
-    @apply text-2xl mt-8 mb-2 text-white font-medium
+    @apply text-2xl mt-8 mb-2 dark:text-white font-medium
 }
 
 article h4 {
@@ -31,5 +31,5 @@ article svg {
 }
 
 article {
-    @apply dark:text-slate-300
+    @apply dark:text-slate-300 text-slate-700
 }
