@@ -25,8 +25,8 @@
 {#each toc as item }
     <li>
         <a href={"#" + item.name} class="{item.id == $Active_Heading
-            ? 'dark:text-sky-400 text-slate-800 font-medium'
-            : 'dark:text-slate-600 dark:hover:text-slate-300 hover:text-slate-900 text-slate-400 font-light'}">
+            ? 'dark:text-sky-400 text-slate-800 font-medium rounded-md bg-slate-200 dark:bg-slate-600 px-4 py-1'
+            : 'dark:text-slate-600 dark:hover:text-slate-300 hover:text-slate-900 text-slate-400 font-light px-4 py-1'}">
             {item.name}
         </a>
         {#if item.child.length != 0}

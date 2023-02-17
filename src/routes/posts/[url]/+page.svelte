@@ -59,7 +59,7 @@
 <svelte:window on:scroll={scroll_callback}/>
 
 <div class="max-w-[90rem] mx-auto">
-    <article class="max-w-3xl xl:max-w-5xl">
+    <article class="max-w-3xl md:max-w-2xl xl:max-w-5xl">
         <h1>{data.post.attributes.title}</h1>
         <div>
             <div>

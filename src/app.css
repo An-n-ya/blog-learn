@@ -33,3 +33,19 @@ article svg {
 article {
     @apply dark:text-slate-300 text-slate-700
 }
+
+#hits li {
+    @apply border-b-[1px] hover:bg-sky-300 px-2 rounded-md
+}
+
+#hits li #head {
+    @apply font-bold pt-2
+}
+
+#hits li #content {
+    @apply overflow-hidden text-ellipsis h-12 mb-4 mt-2 
+}
+
+#search-box input {
+    @apply  placeholder:text-slate-400 border py-2 px-3 h-7 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 rounded-md bg-transparent dark:border-slate-700 dark:text-slate-50 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900
+}
