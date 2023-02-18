@@ -17,6 +17,9 @@ jobs:
       run: npm install
     - name: Run build task
       run: npm run build --if-present
+      env:
+          VITE_ALGOLIA_APP_ID: ${{ secrets.VITE_ALGOLIA_APP_ID }}
+          VITE_ALGOLIA_SEARCH_KEY: ${{ secrets.VITE_ALGOLIA_SEARCH_KEY }}
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
       env:
