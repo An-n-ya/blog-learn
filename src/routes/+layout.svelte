@@ -24,11 +24,14 @@
     onMount(() => {
         document.querySelector("link#dark")?.removeAttribute("disabled");
         document.querySelector("link#bright")?.setAttribute("disabled", "disabled");
+
+        const appId = import.meta.env.VITE_ALGOLIA_APP_ID
+        const searchKey = import.meta.env.VITE_ALGOLIA_SEARCH_KEY
         
         // Replace with your own values
         const searchClient = algoliasearch(
-        '7DUWWNDT93',
-        '53b0f22838dd9c2475b04faf8971b5f2' // search only API key, not admin API key
+            appId,
+            searchKey
         )
         	
 
@@ -123,7 +126,7 @@
         <div id="search-box" class="ml-3 flex items-center"></div>
     </nav>
 </header>
-<div id="hits" style="{hidden_search ? "visibility:hidden" : "visibility:visible"}" class="z-50 text-slate-600 p-2 absolute text-left w-[25rem] h-[25rem] overflow-y-auto right-3 top-14 bg-slate-50 rounded-sm"/>
+<div id="hits" style="{hidden_search ? "visibility:hidden" : "visibility:visible"}" class="z-50 shadow-md text-slate-600 p-2 absolute text-left w-[25rem] h-[25rem] overflow-y-auto right-3 top-14 bg-slate-50 rounded-sm"/>
 <main>
     <div id="products"></div>
     <div id="brand"></div>
