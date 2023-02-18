@@ -3,7 +3,6 @@
     import {onMount} from "svelte";
     import algoliasearch from 'algoliasearch';
     import instantsearch from 'instantsearch.js';
-    import { searchBox, hits } from 'instantsearch.js/es/widgets'
     import { connectHits, connectSearchBox } from 'instantsearch.js/es/connectors'
     let dark_mode = "Bright";
     let hidden_search = true;
@@ -19,6 +18,22 @@
             document.querySelector("link#dark")?.removeAttribute("disabled");
             document.querySelector("link#bright")?.setAttribute("disabled", "disabled");
         }
+    }
+
+    /**
+     * @param {{ stopPropagation: () => void; }} event
+     */
+    function close_search_list(event) {
+        event.stopPropagation();
+        hidden_search = true;
+    }
+    
+    /**
+     * @param {{ stopImmediatePropagation: () => void; }} event
+     */
+    function open_search_list(event) {
+        event.stopImmediatePropagation();
+        hidden_search = false;
     }
     
     onMount(() => {
@@ -51,12 +66,12 @@
                     .map(
                         (/** @type {any} */ item) =>
                         `
-                        <a href="${item.url}">
                         <li>
+                        <a href="${item.url}">
                             <p id="head">${item.title}</p>
                             <p id="content">${instantsearch.highlight({ attribute: 'content', hit: item })}</p>
-                        </li>
                         </a>
+                        </li>
                         `
                     )
                     .join('')}
@@ -82,13 +97,6 @@
                     }
                 });
 
-                input.addEventListener('focus', ()=> {
-                    hidden_search = false;
-                })
-
-                input.addEventListener('blur', ()=> {
-                    hidden_search = true;
-                })
 
                 widgetParams.container.appendChild(input);
             }
@@ -123,10 +131,14 @@
         <button class="text-lg" on:click={toggleLight}>{dark_mode}</button>
         <a class="ml-3 text-lg leading-10" href="/">Home</a>
         <a class="ml-3 text-lg leading-10" href="/posts">Posts</a>
-        <div id="search-box" class="ml-3 flex items-center"></div>
+        <a class="ml-3 text-lg leading-10" href="/posts/Seata?#Seata中AT模式的缺点">test</a>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div tabindex="-1" on:mouseleave={close_search_list} on:blur={close_search_list} on:click={open_search_list}>
+            <div id="search-box" class="ml-3 flex items-center"></div>
+            <div id="hits" style="{hidden_search ? "visibility:hidden" : "visibility:visible"}" class="z-50 shadow-md text-slate-600 p-2 absolute text-left w-[25rem] h-[25rem] overflow-y-auto right-3 top-14 bg-slate-50 rounded-sm"/>
+        </div>
     </nav>
 </header>
-<div id="hits" style="{hidden_search ? "visibility:hidden" : "visibility:visible"}" class="z-50 shadow-md text-slate-600 p-2 absolute text-left w-[25rem] h-[25rem] overflow-y-auto right-3 top-14 bg-slate-50 rounded-sm"/>
 <main>
     <div id="products"></div>
     <div id="brand"></div>
