@@ -131,9 +131,8 @@
         <button class="text-lg" on:click={toggleLight}>{dark_mode}</button>
         <a class="ml-3 text-lg leading-10" href="/">Home</a>
         <a class="ml-3 text-lg leading-10" href="/posts">Posts</a>
-        <a class="ml-3 text-lg leading-10" href="/posts/Seata?#Seata中AT模式的缺点">test</a>
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div tabindex="-1" on:mouseleave={close_search_list} on:blur={close_search_list} on:click={open_search_list}>
+        <div tabindex="-1" on:mouseleave={close_search_list} on:blur={close_search_list} on:click={open_search_list} class="flex items-center">
             <div id="search-box" class="ml-3 flex items-center"></div>
             <div id="hits" style="{hidden_search ? "visibility:hidden" : "visibility:visible"}" class="z-50 shadow-md text-slate-600 p-2 absolute text-left w-[25rem] h-[25rem] overflow-y-auto right-3 top-14 bg-slate-50 rounded-sm"/>
         </div>
