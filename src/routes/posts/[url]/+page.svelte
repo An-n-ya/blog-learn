@@ -61,13 +61,36 @@
 <div class="max-w-[90rem] mx-auto">
     <article class="max-w-3xl md:max-w-2xl xl:max-w-5xl">
         <h1>{data.post.attributes.title}</h1>
-        <div>
+        <div class="flex items-end">
             <div>
                 <CalendarIcon/>{data.post.attributes.mtime}
+            </div>
+            <div class="ml-4 flex items-end">
+                共享协议：
+                <a class="inline-block" rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+                    <img class="my-0" alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
+                </a>
             </div>
         </div>
         {@html data.post.body}
     </article>
+
+    <script src="https://giscus.app/client.js"
+        data-repo="ankh04/blog-learn"
+        data-repo-id="R_kgDOIvFeOw"
+        data-category="Q&A"
+        data-category-id="DIC_kwDOIvFeO84CUX2U"
+        data-mapping="title"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="transparent_dark"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
 
     <div class="fixed top-40 right-[max(0px,calc(50%-55rem))] w-[19.5rem]">
         <TOC toc={data.post.toc}></TOC>

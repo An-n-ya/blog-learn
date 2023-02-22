@@ -23,7 +23,7 @@ article h4 {
 }
 
 article img {
-    @apply max-w-3xl xl:max-w-5xl
+    @apply max-w-3xl md:max-w-2xl xl:max-w-5xl
 }
 
 article svg {
@@ -48,4 +48,8 @@ article {
 
 #search-box input {
     @apply  placeholder:text-slate-400 border py-2 px-3 h-7 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 rounded-md bg-transparent dark:border-slate-700 dark:text-slate-50 dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900
+}
+
+.giscus {
+    @apply max-w-3xl md:max-w-2xl xl:max-w-5xl mx-auto mb-12 text-slate-700
 }

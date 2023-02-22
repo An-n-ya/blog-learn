@@ -138,10 +138,6 @@
         </div>
     </nav>
 </header>
-<main>
-    <div id="products"></div>
-    <div id="brand"></div>
-</main>
 
 <slot></slot>
 
