@@ -156,3 +156,97 @@ kubectl delete pod kube-apiserver-vm-0-5-ubuntu -n kube-system
 ### 参考：
 - 博客 https://kubesphereio.com/post/add-public-ip-to-kubernetes-apiserver-operation-guide/
 - 官方文档 https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/
+
+
+
+## 把本地节点部署到远程k8s集群
+k8s增加节点需要在内网进行，本地节点和远程服务器不属于同一个内网，本应该是不能组集群的。但是没有条件可以创造条件，我们可以使用[openvpn](https://openvpn.net/)这样的技术将本地节点和远程节点组局域网，这样就可以把本地节点放到远程集群上了。集群可以享受到本地节点更高的服务器配置，而本地节点可以享受到远程节点的带宽。
+
+### 部署openvpn
+在远程节点上部署openvpn，有两种方案：
+- 参考官方部署教程 https://openvpn.net/vpn-software-packages/ubuntu/
+- 使用自动化部署脚本 https://github.com/hwdsl2/openvpn-install
+我比较喜欢第二种方案，很省事。分为三步
+1. 安装脚本
+```shell
+wget -O openvpn.sh https://get.vpnsetup.net/ovpn
+```
+2. 执行脚本安装openvpn
+```shell
+sudo bash openvpn.sh --auto
+```
+3. 添加客户端
+再次执行`sudo bash openvpn.sh`，会进入一个选择项，选择添加新client，然后就能得到一个`xxx.ovpn`文件，把这个文件复制到本地节点。
+
+### 设置openvpn客户端
+在把`.ovpn`文件复制到本地后就可以准备连接远程服务器了。参考[openvpn安装手册](https://community.openvpn.net/openvpn/wiki/OpenVPN3Linux?_gl=1*149lgkg*_ga*NTQzMTc2NDUwLjE2NzcyMjk3OTU.*_ga_SPGM8Y8Y79*MTY3NzI0ODIxMy4zLjEuMTY3NzI0ODIxOC41NS4wLjA.&_ga=2.263351436.106169158.1677229796-543176450.1677229795)安装openvpn客户端：
+
+#### centos安装步骤
+1. 安装[copr](https://copr.fedorainfracloud.org/)，copr是一个包的自动构建系统
+```shell
+sudo yum install yum-plugin-copr
+```
+2. 配置openvpn的copr
+```shell
+sudo yum copr enable dsommers/openvpn3
+```
+3. 安装openvpn
+```shell
+sudo yum install openvpn3-client
+```
+上面的步骤会安装两个版本的openvpn:`openvpn2`和`openvpn3`，我们使用`openvpn3`就好。
+1. 添加`.ovpn`配置文件
+```shell
+openvpn3 config-import --config my.ovpn
+```
+2. 启动openvpn session服务
+```shell
+openvpn3 session-start --config my.ovpn
+```
+经过上面的步骤就完成了本地节点到远程节点的局域网组建了。可以在本地看看能不能ping通远程节点:
+```shell
+ping 10.0.0.5
+```
+如果能ping通，就说明配置成功。
+
+#### ubuntu安装步骤
+ubuntu这边需要添加gpg文件，我在尝试的时候总是连不上`openvpn`的网络，搭了梯子也不行...
+无奈最后用手动的方式添加了各种gpg文件。
+先查看下22.04的list:
+```shell
+curl -fsSL https://swupdate.openvpn.net/community/openvpn3/repos/openvpn3-jammy.list
+```
+然后把上面得到的结果复制到`/etc/apt/sources.list.d/openvpn3.list`。
+然后是查看openvpn的pub文件
+```shell
+curl -fsSL https://swupdate.openvpn.net/repos/openvpn-repo-pkg-key.pub
+```
+然后把上面的结果复制到`/etc/apt/trusted.gpg.d/openvpn-repo-pkg-keyring.gpg`。
+之后就可以安装openvpn了:`sudo apt update && sudo apt install openvpn`
+
+连接远程节点：`openvpn --config xxxx.ovpn`
+
+
+### 将本地节点并入k8s集群
+组建好局域网后就可以组k8s集群了。
+1. 在master节点执行：`kubeadm token create --print-join-command`
+2. 将上面的执行结果放到本地节点执行即可
+3. 查看节点情况：`kubectl get nodes`
+
+
+
+### 踩的一些坑
+#### [ERROR CRI]: container runtime is not running: 
+```shell
+sudo rm -rf /etc/containerd/config.toml
+sudo systemctl restart containerd
+```
+
+#### Failed to create pod sandbox: open /run/systemd/resolve/resolv.conf: no such file or directory
+flannel pod 一直启动不了，日志里报了这样的错误。
+宿主机的kubectl在启动一个pod的时候需要为pod创建一个合适的运行环境，这个运行环境中就包括了dns配置，而dns的默认配置文件在`/run/systemd/resolve/resolv.conf`，需要使用`systemd-resolved`。
+但是我的本地节点上似乎没有安装`systemd-resolved`，于是使用`sudo yum -y install systemd-resolved`安装后就没有问题了。
+
+
+#### 防火墙端口问题
+在加入集群的时候报错无法连接`my-ip:10248`，去master节点把10248端口打开就好了
