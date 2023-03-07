@@ -71,6 +71,7 @@
                     <img class="my-0" alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
                 </a>
             </div>
+            <br/>
         </div>
         {@html data.post.body}
     </article>

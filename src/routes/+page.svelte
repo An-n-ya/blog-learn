@@ -14,6 +14,6 @@
 
 <main class="">
     {#each data.posts as post}
-        <PageCard title={post.title} url={post.url} description={post.description}></PageCard>
+        <PageCard title={post.title} url={post.url} description={post.description} time={post.mtime} ></PageCard>
     {/each}
 </main>
