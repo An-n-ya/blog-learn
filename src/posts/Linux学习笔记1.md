@@ -54,6 +54,8 @@ scripts/config --disable SYSTEM_REVOCATION_KEYS
 ```
 
 ## 模拟器运行linux
+
+### menuOS
 我们使用《庖丁解牛Linux内核分析》里的menuOS来构建Linux系统
 ```shell
 git clone https://github.com/mengning/menu.git
@@ -79,6 +81,53 @@ make rootfs
 ```
 就能打开qemu模拟器启动menuOS了：
 ![](https://picture-bed-1301848969.cos.ap-shanghai.myqcloud.com/20230326161648.png)
+
+### debian
+只是运行menuOS好像还差点意思，我们其实可以很方便的制造一个最小文件系统，下面是制作一个debian文件系统的过程：
+1. 安装必要的软件：
+```shell
+sudo apt install genext2fs
+sudo apt install debootstrap
+```
+`genext2fs`用来制作ext2镜像，而`debootstrap`则用来安装一个基本的Debian系统到文件夹。简单来说，debootstrap负责生成一个操作系统必要的一些软件、环境，并把它们分门别类的放到`var, ext, usr`等等这样的文件夹里，然后genest2fs负责把这个文件夹打包生成一个img文件。
+
+2. 使用debootstrap生成debian基础系统文件
+```shell
+boot sudo debootstrap stable debian http://deb.debian.org/debian
+```
+上面的指令执行完后会在当前目录生成一个debian目录，里边就是一个最基础的操作系统目录结构
+```shell
+➜  cd debian/                                                                            (base)
+➜  ls                                                                                  (base)
+bin@   debootstrap/  etc/   lib@    lib64@   media/  opt/   root/  sbin@  sys/  usr/
+boot/  dev/          home/  lib32@  libx32@  mnt/    proc/  run/   srv/   tmp/  var/
+```
+在debian目录中执行`sudo chroot .`可以进入这个mini“debian系统”，在该系统下设置用户密码`passwd root`，设置好后执行`exit`退出来就好。
+
+3. 使用genext2fs制作镜像
+```shell
+sudo genext2fs -b 524256 -d ./debian/ rootfs.img
+``` 
+这里`-b`表示生成的镜像大小（单位为MB），我这里设置的是512M，`-d`选项设置需要制作镜像的目录，rootfs.img就是生成的镜像文件。
+
+我们需要给rootfs.img设置合适的权限。
+
+4. 使用qemu运行
+```shell
+qemu-system-x86_64 -kernel bzImage -hda rootfs.img -append "root=/dev/sda"
+```
+`-kernel`选项选择内核，`-hda`选择文件系统镜像，`-append  "root=/dev/sda"`表示将第一个硬盘（即/dev/sda）作为根文件系统。
+运行效果如下：
+![](https://picture-bed-1301848969.cos.ap-shanghai.myqcloud.com/20230331213346.png)
+
+
+## 使用vscode浏览linux源码
+建议使用[clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)，它速度更快、提示信息更多。
+我们需要在项目根目录生成一个`compile_commands.json`文件，通过这个文件可以确定源文件需要引用的头文件。如果是用cmake工程，添加`-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`参数就能生成，但linux项目使用的是makefile，在这种情况下我们需要使用[bear](https://github.com/rizsotto/Bear)，这是一个专门为clang生成compile_commands的工具，在ubuntu下使用`sudo apt install bear`安装，然后在linux根目录下执行：
+```shell
+bear -- make -j$(nproc)
+```
+
 
 ## 参考资料
 使用vscode+qemu调试linux源码  https://howardlau.me/programming/debugging-linux-kernel-with-vscode-qemu.html
