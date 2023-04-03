@@ -335,9 +335,140 @@ void __section(".inittext") putchar(int ch)
 }
 ```
 
+### init_heap()
+代码如下：
+```c
+static void init_heap(void)
+{
+	char *stack_end;
+
+	if (boot_params.hdr.loadflags & CAN_USE_HEAP) {
+		asm("leal %P1(%%esp),%0"
+		    : "=r" (stack_end) : "i" (-STACK_SIZE));
+
+		heap_end = (char *)
+			((size_t)boot_params.hdr.heap_end_ptr + 0x200);
+		if (heap_end > stack_end)
+			heap_end = stack_end;
+	} else {
+		/* Boot protocol 2.00 only, no heap available */
+		puts("WARNING: Ancient bootloader, some functionality "
+		     "may be limited!\n");
+	}
+}
+```
+上面的汇编代码相当于`leal (-STACK_SIZE)(%%ESP), (stack_end)`，即`stack_end = esp - STACK_SIZE`，STACK_SIZE默认值是1024。stack和heap的增长方向相反，所以如果heap的范围超过了stack的范围，需要让heap_end等于stack_end。
+
+### validate_cpu()
+这个函数检测cpu的类型，可以通过`cpuid`汇编指令查看cpu信息，如果不符合，就直接停止报错。
+逻辑比较直接，就不贴代码啦。
+
+### set_bios_mode()
+这个函数使用bios的`0x15`中断告诉bios系统会运行在long mode。
+```c
+static void set_bios_mode(void)
+{
+#ifdef CONFIG_X86_64
+	struct biosregs ireg;
+
+	initregs(&ireg);
+	ireg.ax = 0xec00;
+	ireg.bx = 2;
+	intcall(0x15, &ireg, NULL);
+#endif
+}
+```
+这里的ax设置为`0xec00` bx设置为`2`就是选择0x15号中断的具体功能，0x15号中断有很多功能，这是其中一个，我们会在下一个函数看到这个中断的其他功能。
+[参考](https://forum.osdev.org/viewtopic.php?p=161565&sid=fef9739a304d873c5e231a41a0c86b46)
+
+### detect_memory()
+这个函数使用0x15号中断的三个功能探测内存的可用情况：
+```c
+void detect_memory(void)
+{
+	detect_memory_e820();
+
+	detect_memory_e801();
+
+	detect_memory_88();
+}
+```
+e820返回一个20字节的数据，前8字节是地址，中间8字节是大小，最后4字节是类型，这对应了boot_e820_entry结构：
+```c
+struct boot_e820_entry {
+	__u64 addr;
+	__u64 size;
+	__u32 type;
+} __attribute__((packed));
+```
+在开机的时候linux会输出e820信息，可以从`dmesg`中得到（这个指令把历史的系统信息放在一个环形缓冲区）：
+```shell
+[  0.000000] KERNEL supported cpus:
+[  0.000000]  Intel GenuineIntel
+[  0.000000]  AMD AuthenticAMD
+[  0.000000]  NSC Geode by NSC
+[  0.000000]  Cyrix CyrixInstead
+[  0.000000]  Centaur CentaurHauls
+[  0.000000]  Transmeta GenuineTMx86
+[  0.000000]  Transmeta TransmetaCPU
+[  0.000000]  UMC UMC UMC UMC
+[  0.000000] BIOS-provided physical RAM map:
+[  0.000000] BIOS-e820: 0000000000000000 - 000000000009f800 (usable)
+[  0.000000] BIOS-e820: 000000000009f800 - 00000000000a0000 (reserved)
+[  0.000000] BIOS-e820: 00000000000ca000 - 00000000000cc000 (reserved)
+[  0.000000] BIOS-e820: 00000000000dc000 - 00000000000e0000 (reserved)
+[  0.000000] BIOS-e820: 00000000000e4000 - 0000000000100000 (reserved)
+[  0.000000] BIOS-e820: 0000000000100000 - 000000003fef0000 (usable)
+[  0.000000] BIOS-e820: 000000003fef0000 - 000000003feff000 (ACPI data)
+[  0.000000] BIOS-e820: 000000003feff000 - 000000003ff00000 (ACPI NVS)
+```
+其他两个是相似，详细信息参考[这里](https://zhuanlan.zhihu.com/p/435020338)
+
+### keyboard_init()
+这个函数通过bios设置键盘
+```c
+static void keyboard_init(void)
+{
+	struct biosregs ireg, oreg;
+	initregs(&ireg);
+
+	ireg.ah = 0x02;		/* Get keyboard status */
+	intcall(0x16, &ireg, &oreg);
+	boot_params.kbd_status = oreg.al;
+
+	ireg.ax = 0x0305;	/* Set keyboard repeat rate */
+	intcall(0x16, &ireg, NULL);
+}
+```
+通过16h号中断，获取键盘状态、并设置键盘的检测频率。
+
+### query_edd()
+这个函数从bios查询`Enhanced Disk Drive`信息：
+```c
+	for (devno = 0x80; devno < 0x80+EDD_MBR_SIG_MAX; devno++) {
+		/*
+		 * Scan the BIOS-supported hard disks and query EDD
+		 * information...
+		 */
+		if (!get_edd_info(devno, &ei)
+		    && boot_params.eddbuf_entries < EDDMAXNR) {
+			memcpy(edp, &ei, sizeof(ei));
+			edp++;
+			boot_params.eddbuf_entries++;
+		}
+
+		if (do_mbr && !read_mbr_sig(devno, &ei, mbrptr++))
+			boot_params.edd_mbr_sig_buf_entries = devno-0x80+1;
+	}
+```
+它会从`0x80`开始扫描所有bios支持的硬盘，并获取edd信息，并读取mbr信息。
+
+### set_video()
+显示这一块比较复杂，暂时先pass
+参考 https://xinqiu.gitbooks.io/linux-insides-cn/content/Booting/linux-bootstrap-3.html
 
 
-
+至此，main.c的初始化工作都完成了，最后一个工作是进入到“保护模式”，保护模式的内容放到下一篇文章。
 
 ## 参考资料
 linux-insides https://xinqiu.gitbooks.io/linux-insides-cn/content/Booting/linux-bootstrap-1.html
