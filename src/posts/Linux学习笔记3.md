@@ -278,6 +278,119 @@ SYM_FUNC_END(.Lin_pm32)
 
 至此操作系统就进入了保护模式，并开始执行位于`0x100000`的代码。
 
+## 长模式
+接下来会运行到`startup_32`，这段代码来自`boot/compressed/head_64.S`，之所以叫`compressed`，是因为内核代码都是经过压缩的，在进入内核之前需要把内核代码解压出来，而`compressed`里面的代码就是做压缩前的准备。
+
+长模式的代码就不逐行解释了（感觉写到现在还没有进入内核，稍微有点疲倦了...），主要看下运行长模式前做了哪些大的准备工作：
+- 检查CPU是否支持长模式
+- 更新gdt
+- 准备页表
+- 进入长模式
+
+### verify_cpu
+首先会调用verify_cpu函数检查cpu是否支持长模式，这是一个汇编函数，位置在`arch/x86/kernel/verify_cpu.S`：
+```x86asm
+	call	verify_cpu
+	testl	%eax, %eax
+	jnz	.Lno_longmode
+```
+这个函数使用cpuid指令检查cpu是否支持sse和长模式。
+
+### 更新gdt
+head_64.S文件中定义了新的gdt的布局：
+```
+SYM_DATA_START_LOCAL(gdt)
+	.word	gdt_end - gdt - 1
+	.long	0
+	.word	0
+	.quad	0x00cf9a000000ffff	/* __KERNEL32_CS */
+	.quad	0x00af9a000000ffff	/* __KERNEL_CS */
+	.quad	0x00cf92000000ffff	/* __KERNEL_DS */
+	.quad	0x0080890000000000	/* TS descriptor */
+	.quad   0x0000000000000000	/* TS continued */
+SYM_DATA_END_LABEL(gdt, SYM_L_LOCAL, gdt_end)
+```
+一样是从0开始的4G平坦空间。
+更新代码如下：
+```x86asm
+	leal	rva(gdt)(%ebp), %eax
+	movl	%eax, 2(%eax)
+	lgdt	(%eax)
+```
+
+### 准备页表
+linux是四级页表，代码如下：
+```x86asm
+	/* Initialize Page tables to 0 */
+	leal	rva(pgtable)(%ebx), %edi
+	xorl	%eax, %eax
+	movl	$(BOOT_INIT_PGT_SIZE/4), %ecx
+	rep	stosl
+
+	/* Build Level 4 */
+	leal	rva(pgtable + 0)(%ebx), %edi
+	leal	0x1007 (%edi), %eax
+	movl	%eax, 0(%edi)
+	addl	%edx, 4(%edi)
+
+	/* Build Level 3 */
+	leal	rva(pgtable + 0x1000)(%ebx), %edi
+	leal	0x1007(%edi), %eax
+	movl	$4, %ecx
+1:	movl	%eax, 0x00(%edi)
+	addl	%edx, 0x04(%edi)
+	addl	$0x00001000, %eax
+	addl	$8, %edi
+	decl	%ecx
+	jnz	1b
+
+	/* Build Level 2 */
+	leal	rva(pgtable + 0x2000)(%ebx), %edi
+	movl	$0x00000183, %eax
+	movl	$2048, %ecx
+1:	movl	%eax, 0(%edi)
+	addl	%edx, 4(%edi)
+	addl	$0x00200000, %eax
+	addl	$8, %edi
+	decl	%ecx
+	jnz	1b
+
+	/* Enable the boot page tables */
+	leal	rva(pgtable)(%ebx), %eax
+	movl	%eax, %cr3
+```
+最后一行把新建的页表地址放入cr3寄存器
+
+
+### 进入长模式
+1. 设置MSR寄存器
+```x86asm
+	/* Enable Long mode in EFER (Extended Feature Enable Register) */
+	movl	$MSR_EFER, %ecx
+	rdmsr
+	btsl	$_EFER_LME, %eax
+	wrmsr
+```
+2. 将内核代码地址放入栈中
+```x86asm
+    pushl    $__KERNEL_CS
+    leal    startup_64(%ebp), %eax
+```
+3. 启动分页
+```x86asm
+    movl    $(X86_CR0_PG | X86_CR0_PE), %eax
+    movl    %eax, %cr0
+```
+4. 跳转到内核
+```x86asm
+	lret
+```
+这个跳转指令会取出栈中`$__KERNEL_CS`的地址，并跳转到那里。
+至此系统进入长模式并跳转到内核代码。
+
+
+
+
 
 
 
