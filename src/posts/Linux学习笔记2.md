@@ -13,7 +13,7 @@ description: 研究linux是如何被引导的，linux在进入内核之前做了
 这张图来自`Documentation/x86/boot.rst`的`type_of_loader`小节
 
 事实上linux也实现了自己的bootloader。我们可以在`arch/x86/boot/haeder.S`中看到：
-```asm
+```
 	.global bootsect_start
 bootsect_start:
 #ifdef CONFIG_EFI_STUB
@@ -69,7 +69,7 @@ qemu直接支持linux的bootloader，这就是会为什么我们在上一篇文�
 -    设置 bss （静态变量区都清零）
 -    跳转到 main.c 开始执行代码
 前三个都是为了运行c代码做准备，最后一个功能是通过：
-```asm
+```
 calll main
 ```
 实现的，这里的`calll`代表`call far`，现在都是使用平坦模式，因此这里的calll和call作用是一样的。
@@ -245,7 +245,7 @@ struct boot_params {
 这个结构也被称作“zeropage”。
 
 函数`memcpy`是汇编实现的，它的实现在`arch/x86/boot/copy.S`中：
-```asm
+```
 SYM_FUNC_START_NOALIGN(memcpy)
 	pushw	%si
 	pushw	%di
