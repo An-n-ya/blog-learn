@@ -245,7 +245,7 @@ struct boot_params {
 这个结构也被称作“zeropage”。
 
 函数`memcpy`是汇编实现的，它的实现在`arch/x86/boot/copy.S`中：
-```
+```x86asm
 SYM_FUNC_START_NOALIGN(memcpy)
 	pushw	%si
 	pushw	%di

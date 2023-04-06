@@ -214,7 +214,7 @@ static void setup_gdt(void)
 
 ### protected_mode_jump
 这个函数是一个汇编函数，来自`boot/pmjump.S`
-```
+```x86asm
 SYM_FUNC_START_NOALIGN(protected_mode_jump)
 	movl	%edx, %esi		# Pointer to boot_params table
 
@@ -269,7 +269,7 @@ SYM_FUNC_START_LOCAL_NOALIGN(.Lin_pm32)
 SYM_FUNC_END(.Lin_pm32)
 ```
 下面的汇编代码设置了CR0寄存器的PE位，这是开启保护模式前必须做的：
-```
+```x86asm
 	movl	%cr0, %edx
 	orb	$X86_CR0_PE, %dl	# Protected mode
 	movl	%edx, %cr0
